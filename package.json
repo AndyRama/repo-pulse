@@ -1,0 +1,46 @@
+{
+  "name": "repo-pulse",
+  "version": "0.1.0",
+  "description": "Measure how healthy an open source project's maintenance is: PR turnaround, issue triage, release cadence. Zero dependencies.",
+  "keywords": [
+    "open-source",
+    "maintainers",
+    "github",
+    "metrics",
+    "repository-health",
+    "triage"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "repo-pulse": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.test.json && node --test \".build-test/test/*.test.js\"",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "clean": "rm -rf dist .build-test",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
