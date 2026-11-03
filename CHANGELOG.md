@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.1.1]
+
+### Changed
+
+- Package renamed to `@andyrama/repo-pulse`: npm rejected the unscoped name as too similar to an existing package. The `repo-pulse` command name is unchanged. Version 0.1.0 was never published to npm.
+
 ## [0.1.0]
 
 ### Added

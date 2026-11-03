@@ -22,8 +22,8 @@ Every component is a simple linear scale with documented thresholds (see [`src/m
 ## Install
 
 ```sh
-npm install repo-pulse        # as a library
-npx repo-pulse nodejs/node    # or run the CLI without installing
+npm install @andyrama/repo-pulse        # as a library
+npx @andyrama/repo-pulse nodejs/node    # or run the CLI without installing
 ```
 
 Requires Node.js 20 or later.
@@ -34,9 +34,9 @@ To work from source instead, see [Development](#development).
 
 ```sh
 export GITHUB_TOKEN=ghp_...            # optional, raises the rate limit from 60 to 5000 requests/hour
-npx repo-pulse nodejs/node             # Markdown report
-npx repo-pulse nodejs/node --json      # JSON, for scripts and dashboards
-npx repo-pulse owner/repo --window 180 --stale 60
+npx @andyrama/repo-pulse nodejs/node             # Markdown report
+npx @andyrama/repo-pulse nodejs/node --json      # JSON, for scripts and dashboards
+npx @andyrama/repo-pulse owner/repo --window 180 --stale 60
 ```
 
 | Option | Default | Meaning |
@@ -51,7 +51,7 @@ Exit codes: `0` success, `1` runtime error (network, rate limit, not found), `2`
 ## Library
 
 ```ts
-import { GitHubClient, computeMetrics, renderMarkdown } from "repo-pulse";
+import { GitHubClient, computeMetrics, renderMarkdown } from "@andyrama/repo-pulse";
 
 const client = new GitHubClient({ token: process.env.GITHUB_TOKEN });
 const data = await client.fetchRepoData("nodejs", "node");
