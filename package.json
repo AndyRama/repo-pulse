@@ -11,6 +11,14 @@
     "triage"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andyrama/repo-pulse.git"
+  },
+  "homepage": "https://github.com/andyrama/repo-pulse#readme",
+  "bugs": {
+    "url": "https://github.com/andyrama/repo-pulse/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

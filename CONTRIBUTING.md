@@ -5,7 +5,7 @@ Thanks for your interest. Contributions of every size are welcome: bug reports, 
 ## Getting started
 
 ```sh
-git clone https://github.com/<your-username>/repo-pulse.git
+git clone https://github.com/andyrama/repo-pulse.git
 cd repo-pulse
 npm install
 npm test
