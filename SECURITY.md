@@ -8,7 +8,7 @@ Only the latest released version receives security fixes.
 
 Please do not open a public issue.
 
-Use GitHub's private vulnerability reporting: on the repository page, go to **Security** > **Report a vulnerability**. If that is unavailable, email **<contact-email>** (replace before publishing).
+Use GitHub's private vulnerability reporting: on the repository page, go to **Security** > **Report a vulnerability**. If that is unavailable, email **andyramaroson@gmail.com**.
 
 Include a description, steps to reproduce, and the version affected. You can expect an acknowledgement within a few days. We will coordinate a fix and a disclosure date with you.
 

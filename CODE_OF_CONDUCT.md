@@ -25,7 +25,7 @@ Project maintainers are responsible for clarifying these standards and may remov
 
 ## Reporting
 
-Report unacceptable behavior to the maintainers at **<contact-email>** (replace before publishing). All reports are reviewed promptly and kept confidential.
+Report unacceptable behavior to the maintainers at **andyramaroson@gmail.com**. All reports are reviewed promptly and kept confidential.
 
 ## Attribution
 
