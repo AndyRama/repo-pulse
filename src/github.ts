@@ -29,6 +29,12 @@ export interface FetchRepoOptions {
   now?: Date;
 }
 
+export interface Page<T> {
+  items: T[];
+  /** True when the page cap was reached while more data was still available. */
+  truncated: boolean;
+}
+
 const REPO_PART = /^[A-Za-z0-9_.-]+$/;
 
 export function parseRepo(input: string): { owner: string; repo: string } {
@@ -94,25 +100,29 @@ export class GitHubClient {
   }
 
   /**
-   * Fetches pages until one is short, `maxPages` is reached, or `stop` returns true
-   * for the last item of a page.
+   * Fetches pages until one is short, `stop` returns true for the last item of a page,
+   * or `maxPages` is reached. In the last case `truncated` is set, because the
+   * collection may hold more items than were fetched.
    */
   async paginate<T>(
     path: string,
     params: Record<string, string> = {},
     stop?: (last: T) => boolean,
-  ): Promise<T[]> {
+  ): Promise<Page<T>> {
     const all: T[] = [];
+    let truncated = false;
     for (let page = 1; page <= this.maxPages; page++) {
       const items = await this.getPage<T>(path, params, page);
       all.push(...items);
       const last = items[items.length - 1];
-      if (items.length < this.perPage || (last !== undefined && stop?.(last))) break;
+      if (last !== undefined && stop?.(last)) break;
+      if (items.length < this.perPage) break;
+      if (page === this.maxPages) truncated = true;
     }
-    return all;
+    return { items: all, truncated };
   }
 
-  listPulls(owner: string, repo: string, windowDays = 365, now = new Date()): Promise<PullRequest[]> {
+  listPulls(owner: string, repo: string, windowDays = 365, now = new Date()): Promise<Page<PullRequest>> {
     const cutoff = now.getTime() - windowDays * 86_400_000;
     return this.paginate<PullRequest>(
       `/repos/${owner}/${repo}/pulls`,
@@ -121,7 +131,7 @@ export class GitHubClient {
     );
   }
 
-  listIssues(owner: string, repo: string): Promise<Issue[]> {
+  listIssues(owner: string, repo: string): Promise<Page<Issue>> {
     return this.paginate<Issue>(`/repos/${owner}/${repo}/issues`, {
       state: "all",
       sort: "updated",
@@ -129,7 +139,7 @@ export class GitHubClient {
     });
   }
 
-  listReleases(owner: string, repo: string): Promise<Release[]> {
+  listReleases(owner: string, repo: string): Promise<Page<Release>> {
     return this.paginate<Release>(`/repos/${owner}/${repo}/releases`);
   }
 
@@ -139,6 +149,11 @@ export class GitHubClient {
       this.listIssues(owner, repo),
       this.listReleases(owner, repo),
     ]);
-    return { pulls, issues, releases };
+    return {
+      pulls: pulls.items,
+      issues: issues.items,
+      releases: releases.items,
+      truncated: { pulls: pulls.truncated, issues: issues.truncated, releases: releases.truncated },
+    };
   }
 }

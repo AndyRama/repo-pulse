@@ -39,7 +39,12 @@ function pullRequestMetrics(
   };
 }
 
-function issueMetrics(issues: RepoData["issues"], now: Date, staleDays: number): IssueMetrics {
+function issueMetrics(
+  issues: RepoData["issues"],
+  now: Date,
+  staleDays: number,
+  sampled: boolean,
+): IssueMetrics {
   // GitHub's issues endpoint also returns pull requests; ignore them here.
   const real = issues.filter((i) => i.pull_request === undefined);
   const open = real.filter((i) => i.state === "open");
@@ -51,8 +56,9 @@ function issueMetrics(issues: RepoData["issues"], now: Date, staleDays: number):
     open: open.length,
     closed: closed.length,
     stale: stale.length,
-    staleRatio: ratio(stale.length, open.length),
-    unansweredRatio: ratio(unanswered.length, open.length),
+    // A truncated sample is biased towards recently updated items, so ratios would mislead.
+    staleRatio: sampled ? null : ratio(stale.length, open.length),
+    unansweredRatio: sampled ? null : ratio(unanswered.length, open.length),
     medianDaysToClose: median(closed.map((i) => daysBetween(i.created_at, i.closed_at as string))),
   };
 }
@@ -118,7 +124,12 @@ export function computeMetrics(data: RepoData, options: MetricsOptions = {}): Me
   }
 
   const pullRequests = pullRequestMetrics(data.pulls, now, windowDays);
-  const issues = issueMetrics(data.issues, now, staleDays);
+  const truncated = data.truncated ?? { pulls: false, issues: false, releases: false };
+  const issues = issueMetrics(data.issues, now, staleDays, truncated.issues);
+  const oldestPull = data.pulls.reduce<string | null>(
+    (oldest, pr) => (oldest === null || pr.created_at < oldest ? pr.created_at : oldest),
+    null,
+  );
   const releases = releaseMetrics(data.releases, now, windowDays);
 
   return {
@@ -129,5 +140,11 @@ export function computeMetrics(data: RepoData, options: MetricsOptions = {}): Me
     issues,
     releases,
     health: healthScore(pullRequests, issues, releases),
+    coverage: {
+      pullsTruncated: truncated.pulls,
+      issuesTruncated: truncated.issues,
+      releasesTruncated: truncated.releases,
+      pullsSince: truncated.pulls ? oldestPull : null,
+    },
   };
 }

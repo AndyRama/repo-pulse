@@ -69,7 +69,7 @@ This repository ships [a workflow](.github/workflows/pulse.yml) that runs `repo-
 
 ## Limits
 
-- Data comes from GitHub's list endpoints, capped at 10 pages of 100 items per collection by default (`maxPages`). Very large repositories are sampled from their most recent activity.
+- Data comes from GitHub's list endpoints, capped at 10 pages of 100 items per collection by default (`maxPages`). On very large repositories the cap is reached: the report then says so in a "Data coverage" section, marks the score as partial, and skips the issue ratios (stale and unanswered), which a truncated sample would bias. Figures for such repositories cover only the most recent activity.
 - "Unanswered" means an open issue with zero comments. It does not distinguish maintainers from other commenters.
 - The health score is a heuristic. Use it to spot trends, not to rank projects.
 

@@ -166,4 +166,35 @@ describe("computeMetrics", () => {
     assert.throws(() => computeMetrics(empty, { windowDays: 0 }), RangeError);
     assert.throws(() => computeMetrics(empty, { staleDays: -5 }), RangeError);
   });
+
+  it("reports full coverage by default", () => {
+    const m = computeMetrics(empty, { now: NOW });
+    assert.deepEqual(m.coverage, {
+      pullsTruncated: false,
+      issuesTruncated: false,
+      releasesTruncated: false,
+      pullsSince: null,
+    });
+  });
+
+  it("skips issue ratios and flags coverage when data was truncated", () => {
+    const m = computeMetrics(
+      {
+        pulls: [
+          pr({ number: 1, created_at: daysAgo(30), merged_at: daysAgo(29) }),
+          pr({ number: 2, created_at: daysAgo(60), merged_at: daysAgo(58) }),
+        ],
+        issues: [issue({ number: 1, updated_at: daysAgo(500), comments: 0 })],
+        releases: [],
+        truncated: { pulls: true, issues: true, releases: false },
+      },
+      { now: NOW },
+    );
+    assert.equal(m.issues.staleRatio, null);
+    assert.equal(m.issues.unansweredRatio, null);
+    assert.equal(m.health.components.issueFreshness, null);
+    assert.equal(m.health.components.issueResponsiveness, null);
+    assert.equal(m.coverage.issuesTruncated, true);
+    assert.equal(m.coverage.pullsSince, daysAgo(60));
+  });
 });

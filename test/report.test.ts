@@ -21,3 +21,25 @@ describe("report", () => {
     assert.equal(parsed.windowDays, 365);
   });
 });
+
+describe("report coverage warnings", () => {
+  const base = { pulls: [], issues: [], releases: [] };
+
+  it("shows no coverage section when nothing was truncated", () => {
+    const md = renderMarkdown("o/r", computeMetrics(base, { now: NOW }));
+    assert.doesNotMatch(md, /Data coverage|partial data/i);
+  });
+
+  it("warns when data was truncated", () => {
+    const metrics = computeMetrics(
+      { ...base, truncated: { pulls: true, issues: true, releases: true } },
+      { now: NOW },
+    );
+    const md = renderMarkdown("o/r", metrics);
+    assert.match(md, /\(partial data\)/);
+    assert.match(md, /## Data coverage/);
+    assert.match(md, /Pull requests: the fetch cap was reached/);
+    assert.match(md, /Issues: the fetch cap was reached/);
+    assert.match(md, /Releases: the fetch cap was reached/);
+  });
+});

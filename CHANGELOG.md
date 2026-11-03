@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Fixed
+
+- Reports on very large repositories no longer present truncated data as complete. When the fetch cap is reached, the report adds a "Data coverage" section, flags the score as partial, and skips the stale and unanswered issue ratios.
+
+### Changed
+
+- `GitHubClient.listPulls`, `listIssues` and `listReleases` now return `{ items, truncated }`. `RepoData` and `Metrics` gain optional truncation and `coverage` fields.
+
 ## [0.1.1]
 
 ### Changed

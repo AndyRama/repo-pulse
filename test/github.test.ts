@@ -58,15 +58,17 @@ describe("GitHubClient", () => {
       const page = Number(url.searchParams.get("page"));
       return json(page === 1 ? [{ tag_name: "a" }, { tag_name: "b" }] : [{ tag_name: "c" }]);
     });
-    const releases = await new GitHubClient({ fetch, perPage: 2 }).listReleases("o", "r");
-    assert.equal(releases.length, 3);
+    const page = await new GitHubClient({ fetch, perPage: 2 }).listReleases("o", "r");
+    assert.equal(page.items.length, 3);
+    assert.equal(page.truncated, false);
     assert.equal(calls.length, 2);
   });
 
   it("respects maxPages", async () => {
     const { fetch, calls } = mockFetch(() => json([{ tag_name: "a" }, { tag_name: "b" }]));
-    await new GitHubClient({ fetch, perPage: 2, maxPages: 3 }).listReleases("o", "r");
+    const page = await new GitHubClient({ fetch, perPage: 2, maxPages: 3 }).listReleases("o", "r");
     assert.equal(calls.length, 3);
+    assert.equal(page.truncated, true, "cap reached while pages were still full");
   });
 
   it("stops paginating pull requests once they leave the window", async () => {
@@ -79,7 +81,8 @@ describe("GitHubClient", () => {
       ]),
     );
     const pulls = await new GitHubClient({ fetch, perPage: 2 }).listPulls("o", "r", 365, now);
-    assert.equal(pulls.length, 2);
+    assert.equal(pulls.items.length, 2);
+    assert.equal(pulls.truncated, false, "window reached, so nothing relevant is missing");
     assert.equal(calls.length, 1, "no second page requested");
   });
 
@@ -100,7 +103,12 @@ describe("GitHubClient", () => {
   it("fetches pulls, issues and releases together", async () => {
     const { fetch, calls } = mockFetch(() => json([]));
     const data = await new GitHubClient({ fetch }).fetchRepoData("o", "r");
-    assert.deepEqual(data, { pulls: [], issues: [], releases: [] });
+    assert.deepEqual(data, {
+      pulls: [],
+      issues: [],
+      releases: [],
+      truncated: { pulls: false, issues: false, releases: false },
+    });
     const paths = calls.map((u) => u.pathname).sort();
     assert.deepEqual(paths, ["/repos/o/r/issues", "/repos/o/r/pulls", "/repos/o/r/releases"]);
   });

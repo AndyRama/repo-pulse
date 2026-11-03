@@ -1,9 +1,10 @@
 export { computeMetrics } from "./metrics.js";
 export { GitHubClient, GitHubError, parseRepo } from "./github.js";
-export type { FetchRepoOptions, GitHubClientOptions } from "./github.js";
+export type { FetchRepoOptions, GitHubClientOptions, Page } from "./github.js";
 export { renderJson, renderMarkdown } from "./report.js";
 export { daysBetween, median, percentile } from "./stats.js";
 export type {
+  Coverage,
   HealthScore,
   Issue,
   IssueMetrics,
