@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Fixed
+
+- The score is only labelled "partial data" when truncation affects it (pull requests or open issues). Truncated closed issues or releases are listed under "Data coverage" without discrediting the score.
+
 ## [0.1.3]
 
 ### Fixed

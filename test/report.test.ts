@@ -43,4 +43,15 @@ describe("report coverage warnings", () => {
     assert.match(md, /Closed issues: the fetch cap was reached/);
     assert.match(md, /Releases: the fetch cap was reached/);
   });
+
+  it("lists truncated closed issues without flagging the score as partial", () => {
+    const metrics = computeMetrics(
+      { ...base, truncated: { pulls: false, issues: false, closedIssues: true, releases: false } },
+      { now: NOW },
+    );
+    const md = renderMarkdown("o/r", metrics);
+    assert.match(md, /## Data coverage/);
+    assert.match(md, /Closed issues: the fetch cap was reached/);
+    assert.doesNotMatch(md, /\(partial data\)/);
+  });
 });

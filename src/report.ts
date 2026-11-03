@@ -45,7 +45,9 @@ export function renderMarkdown(repo: string, m: Metrics): string {
   const { pullRequests: pr, issues, releases, health } = m;
   const score = health.score === null ? "n/a" : `${health.score}/100`;
   const coverage = coverageSection(m);
-  const partial = coverage.length > 0;
+  // Only truncation that feeds the score makes the score "partial". Truncated closed
+  // issues or releases are listed under "Data coverage" without discrediting the score.
+  const partial = m.coverage.pullsTruncated || m.coverage.issuesTruncated;
 
   return [
     `# Maintenance pulse: ${repo}`,
