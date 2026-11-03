@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.1.2]
+
 ### Fixed
 
 - Reports on very large repositories no longer present truncated data as complete. When the fetch cap is reached, the report adds a "Data coverage" section, flags the score as partial, and skips the stale and unanswered issue ratios.
