@@ -21,24 +21,22 @@ Every component is a simple linear scale with documented thresholds (see [`src/m
 
 ## Install
 
-`repo-pulse` is pre-release (0.1.0) and not published to npm yet. Build it from source:
-
 ```sh
-git clone https://github.com/AndyRama/repo-pulse.git
-cd repo-pulse
-npm install
-npm run build
+npm install repo-pulse        # as a library
+npx repo-pulse nodejs/node    # or run the CLI without installing
 ```
 
 Requires Node.js 20 or later.
+
+To work from source instead, see [Development](#development).
 
 ## CLI
 
 ```sh
 export GITHUB_TOKEN=ghp_...            # optional, raises the rate limit from 60 to 5000 requests/hour
-node dist/cli.js nodejs/node           # Markdown report
-node dist/cli.js nodejs/node --json    # JSON, for scripts and dashboards
-node dist/cli.js owner/repo --window 180 --stale 60
+npx repo-pulse nodejs/node             # Markdown report
+npx repo-pulse nodejs/node --json      # JSON, for scripts and dashboards
+npx repo-pulse owner/repo --window 180 --stale 60
 ```
 
 | Option | Default | Meaning |
