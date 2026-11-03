@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.1.3]
+
+### Fixed
+
+- Issue metrics are now complete for most established repositories. Open issues and issues closed within the window are fetched separately, instead of sampling the 1,000 most recently updated items (issues and pull requests together). Stale and unanswered ratios are only skipped when there are more open items than the fetch cap.
+
+### Changed
+
+- `GitHubClient.listIssues` is replaced by `listOpenIssues` and `listClosedIssues`.
+- `Metrics.issues.closed` counts issues closed within the window. `RepoData.truncated` gains `closedIssues` and `Metrics.coverage` gains `closedIssuesTruncated`.
+
 ## [0.1.2]
 
 ### Fixed

@@ -131,9 +131,26 @@ export class GitHubClient {
     );
   }
 
-  listIssues(owner: string, repo: string): Promise<Page<Issue>> {
+  /** Open issues (and open pull requests, which GitHub mixes in), most recently updated first. */
+  listOpenIssues(owner: string, repo: string): Promise<Page<Issue>> {
     return this.paginate<Issue>(`/repos/${owner}/${repo}/issues`, {
-      state: "all",
+      state: "open",
+      sort: "updated",
+      direction: "desc",
+    });
+  }
+
+  /** Closed issues (and pull requests) updated within the window, most recently updated first. */
+  listClosedIssues(
+    owner: string,
+    repo: string,
+    windowDays = 365,
+    now = new Date(),
+  ): Promise<Page<Issue>> {
+    const since = new Date(now.getTime() - windowDays * 86_400_000).toISOString();
+    return this.paginate<Issue>(`/repos/${owner}/${repo}/issues`, {
+      state: "closed",
+      since,
       sort: "updated",
       direction: "desc",
     });
@@ -144,16 +161,22 @@ export class GitHubClient {
   }
 
   async fetchRepoData(owner: string, repo: string, options: FetchRepoOptions = {}): Promise<RepoData> {
-    const [pulls, issues, releases] = await Promise.all([
+    const [pulls, openIssues, closedIssues, releases] = await Promise.all([
       this.listPulls(owner, repo, options.windowDays, options.now),
-      this.listIssues(owner, repo),
+      this.listOpenIssues(owner, repo),
+      this.listClosedIssues(owner, repo, options.windowDays, options.now),
       this.listReleases(owner, repo),
     ]);
     return {
       pulls: pulls.items,
-      issues: issues.items,
+      issues: [...openIssues.items, ...closedIssues.items],
       releases: releases.items,
-      truncated: { pulls: pulls.truncated, issues: issues.truncated, releases: releases.truncated },
+      truncated: {
+        pulls: pulls.truncated,
+        issues: openIssues.truncated,
+        closedIssues: closedIssues.truncated,
+        releases: releases.truncated,
+      },
     };
   }
 }

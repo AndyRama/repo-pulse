@@ -33,8 +33,11 @@ export interface RepoData {
   pulls: PullRequest[];
   issues: Issue[];
   releases: Release[];
-  /** Which collections hit the fetch cap and may be incomplete. Defaults to none. */
-  truncated?: { pulls: boolean; issues: boolean; releases: boolean };
+  /**
+   * Which collections hit the fetch cap and may be incomplete. Defaults to none.
+   * `issues` refers to open issues, `closedIssues` to issues closed within the window.
+   */
+  truncated?: { pulls: boolean; issues: boolean; releases: boolean; closedIssues?: boolean };
 }
 
 export interface MetricsOptions {
@@ -62,6 +65,7 @@ export interface PullRequestMetrics {
 
 export interface IssueMetrics {
   open: number;
+  /** Issues closed within the window. */
   closed: number;
   /** Open issues not updated for `staleDays` days or more. */
   stale: number;
@@ -96,7 +100,10 @@ export interface HealthScore {
 
 export interface Coverage {
   pullsTruncated: boolean;
+  /** Open issues: more than the fetch cap, so stale and unanswered ratios are not computed. */
   issuesTruncated: boolean;
+  /** Closed issues: the window is only partly covered. */
+  closedIssuesTruncated: boolean;
   releasesTruncated: boolean;
   /** When pull requests were truncated: creation date of the oldest one fetched. */
   pullsSince: string | null;

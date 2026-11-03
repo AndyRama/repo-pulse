@@ -43,12 +43,15 @@ function issueMetrics(
   issues: RepoData["issues"],
   now: Date,
   staleDays: number,
+  windowDays: number,
   sampled: boolean,
 ): IssueMetrics {
   // GitHub's issues endpoint also returns pull requests; ignore them here.
   const real = issues.filter((i) => i.pull_request === undefined);
   const open = real.filter((i) => i.state === "open");
-  const closed = real.filter((i) => i.state === "closed" && i.closed_at !== null);
+  const closed = real.filter(
+    (i) => i.state === "closed" && i.closed_at !== null && daysBetween(i.closed_at, now) <= windowDays,
+  );
   const stale = open.filter((i) => daysBetween(i.updated_at, now) >= staleDays);
   const unanswered = open.filter((i) => i.comments === 0);
 
@@ -124,8 +127,12 @@ export function computeMetrics(data: RepoData, options: MetricsOptions = {}): Me
   }
 
   const pullRequests = pullRequestMetrics(data.pulls, now, windowDays);
-  const truncated = data.truncated ?? { pulls: false, issues: false, releases: false };
-  const issues = issueMetrics(data.issues, now, staleDays, truncated.issues);
+  const truncated: NonNullable<RepoData["truncated"]> = data.truncated ?? {
+    pulls: false,
+    issues: false,
+    releases: false,
+  };
+  const issues = issueMetrics(data.issues, now, staleDays, windowDays, truncated.issues);
   const oldestPull = data.pulls.reduce<string | null>(
     (oldest, pr) => (oldest === null || pr.created_at < oldest ? pr.created_at : oldest),
     null,
@@ -143,6 +150,7 @@ export function computeMetrics(data: RepoData, options: MetricsOptions = {}): Me
     coverage: {
       pullsTruncated: truncated.pulls,
       issuesTruncated: truncated.issues,
+      closedIssuesTruncated: truncated.closedIssues ?? false,
       releasesTruncated: truncated.releases,
       pullsSince: truncated.pulls ? oldestPull : null,
     },

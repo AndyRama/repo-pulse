@@ -172,6 +172,7 @@ describe("computeMetrics", () => {
     assert.deepEqual(m.coverage, {
       pullsTruncated: false,
       issuesTruncated: false,
+      closedIssuesTruncated: false,
       releasesTruncated: false,
       pullsSince: null,
     });
@@ -196,5 +197,37 @@ describe("computeMetrics", () => {
     assert.equal(m.health.components.issueResponsiveness, null);
     assert.equal(m.coverage.issuesTruncated, true);
     assert.equal(m.coverage.pullsSince, daysAgo(60));
+  });
+
+  it("keeps issue ratios when only closed issues were truncated", () => {
+    const m = computeMetrics(
+      {
+        ...empty,
+        issues: [
+          issue({ number: 1, updated_at: daysAgo(200), comments: 0 }),
+          issue({ number: 2, updated_at: daysAgo(2), comments: 1 }),
+        ],
+        truncated: { pulls: false, issues: false, closedIssues: true, releases: false },
+      },
+      { now: NOW },
+    );
+    assert.equal(m.issues.staleRatio, 0.5);
+    assert.equal(m.coverage.closedIssuesTruncated, true);
+    assert.equal(m.coverage.issuesTruncated, false);
+  });
+
+  it("counts only issues closed within the window", () => {
+    const m = computeMetrics(
+      {
+        ...empty,
+        issues: [
+          issue({ number: 1, state: "closed", created_at: daysAgo(20), closed_at: daysAgo(10) }),
+          issue({ number: 2, state: "closed", created_at: daysAgo(500), closed_at: daysAgo(400) }),
+        ],
+      },
+      { now: NOW },
+    );
+    assert.equal(m.issues.closed, 1);
+    assert.equal(m.issues.medianDaysToClose, 10);
   });
 });

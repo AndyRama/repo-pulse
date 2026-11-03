@@ -107,9 +107,20 @@ describe("GitHubClient", () => {
       pulls: [],
       issues: [],
       releases: [],
-      truncated: { pulls: false, issues: false, releases: false },
+      truncated: { pulls: false, issues: false, closedIssues: false, releases: false },
     });
     const paths = calls.map((u) => u.pathname).sort();
-    assert.deepEqual(paths, ["/repos/o/r/issues", "/repos/o/r/pulls", "/repos/o/r/releases"]);
+    assert.deepEqual(paths, [
+      "/repos/o/r/issues",
+      "/repos/o/r/issues",
+      "/repos/o/r/pulls",
+      "/repos/o/r/releases",
+    ]);
+    const issueCalls = calls.filter((u) => u.pathname.endsWith("/issues"));
+    assert.deepEqual(issueCalls.map((u) => u.searchParams.get("state")).sort(), ["closed", "open"]);
+    const closedCall = issueCalls.find((u) => u.searchParams.get("state") === "closed");
+    assert.ok(closedCall?.searchParams.get("since"), "closed issues are limited to the window");
+    const openCall = issueCalls.find((u) => u.searchParams.get("state") === "open");
+    assert.equal(openCall?.searchParams.get("since"), null);
   });
 });

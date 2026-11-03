@@ -23,7 +23,12 @@ function coverageSection(m: Metrics): string[] {
   }
   if (c.issuesTruncated) {
     lines.push(
-      "- Issues: the fetch cap was reached, so counts come from the most recently updated items only (pull requests are part of that sample). Stale and unanswered figures are not computed and the score ignores them.",
+      "- Open issues: the fetch cap was reached, so counts come from the most recently updated open items only (open pull requests are part of that sample). Stale and unanswered figures are not computed and the score ignores them.",
+    );
+  }
+  if (c.closedIssuesTruncated) {
+    lines.push(
+      "- Closed issues: the fetch cap was reached, so only the most recently updated ones are included and the time to close covers a shorter period.",
     );
   }
   if (c.releasesTruncated) {
@@ -58,7 +63,7 @@ export function renderMarkdown(repo: string, m: Metrics): string {
     "",
     "## Issues",
     "",
-    `- Open: ${issues.open} · closed: ${issues.closed}${m.coverage.issuesTruncated ? " (sample)" : ""}`,
+    `- Open: ${issues.open}${m.coverage.issuesTruncated ? " (sample)" : ""} · closed in the last ${m.windowDays} days: ${issues.closed}${m.coverage.closedIssuesTruncated ? " (partial)" : ""}`,
     `- Stale (no activity for ${m.staleDays}+ days): ${m.coverage.issuesTruncated ? "n/a (sample)" : `${issues.stale} (${percent(issues.staleRatio)} of open)`}`,
     `- Open issues without any comment: ${percent(issues.unansweredRatio)}`,
     `- Median time to close: ${days(issues.medianDaysToClose)}`,

@@ -32,14 +32,15 @@ describe("report coverage warnings", () => {
 
   it("warns when data was truncated", () => {
     const metrics = computeMetrics(
-      { ...base, truncated: { pulls: true, issues: true, releases: true } },
+      { ...base, truncated: { pulls: true, issues: true, closedIssues: true, releases: true } },
       { now: NOW },
     );
     const md = renderMarkdown("o/r", metrics);
     assert.match(md, /\(partial data\)/);
     assert.match(md, /## Data coverage/);
     assert.match(md, /Pull requests: the fetch cap was reached/);
-    assert.match(md, /Issues: the fetch cap was reached/);
+    assert.match(md, /Open issues: the fetch cap was reached/);
+    assert.match(md, /Closed issues: the fetch cap was reached/);
     assert.match(md, /Releases: the fetch cap was reached/);
   });
 });
