@@ -10,11 +10,6 @@ For each release:
 
 1. Update the version in `package.json` and move the `[Unreleased]` entries in `CHANGELOG.md` under the new version.
 2. Commit and push to `main`.
-3. Tag and push the tag:
+3. On GitHub, go to Releases > **Draft a new release**. In "Choose a tag", type the new tag (for example `v0.1.0`) and pick **Create new tag on publish**, with the target set to `main`. Click **Generate release notes**, then **Publish release**.
 
-   ```sh
-   git tag v0.1.0
-   git push origin v0.1.0
-   ```
-
-The `Release` workflow checks that the tag matches `package.json`, runs the tests, publishes to npm with provenance, and creates the GitHub release with generated notes.
+Publishing the release triggers the `Release` workflow. It checks that the tag matches `package.json`, runs the tests, and publishes to npm with provenance.
