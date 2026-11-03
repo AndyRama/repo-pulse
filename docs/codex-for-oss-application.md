@@ -21,7 +21,7 @@ Program details: https://developers.openai.com/codex/codex-for-oss
 | First name, last name | (yours) |
 | Email | The email tied to your ChatGPT account |
 | GitHub username | (yours), profile set to public |
-| Repository URL | https://github.com/andyrama/repo-pulse, set to public |
+| Repository URL | https://github.com/AndyRama/repo-pulse, set to public |
 | Role | Lead maintainer (if you are the main maintainer) |
 | Interested in | Codex Security (optional), API credits for my project |
 | OpenAI organization ID | org-... |

@@ -24,7 +24,7 @@ Every component is a simple linear scale with documented thresholds (see [`src/m
 `repo-pulse` is pre-release (0.1.0) and not published to npm yet. Build it from source:
 
 ```sh
-git clone https://github.com/andyrama/repo-pulse.git
+git clone https://github.com/AndyRama/repo-pulse.git
 cd repo-pulse
 npm install
 npm run build
