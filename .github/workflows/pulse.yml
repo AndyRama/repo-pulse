@@ -1,0 +1,39 @@
+name: Maintenance pulse
+
+# Runs repo-pulse on this repository every Monday and publishes the report.
+# This builds a visible maintenance history and doubles as a living example.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node dist/cli.js "${{ github.repository }}" > pulse.md
+          node dist/cli.js "${{ github.repository }}" --json > pulse.json
+          cat pulse.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pulse-${{ github.run_number }}
+          path: |
+            pulse.md
+            pulse.json

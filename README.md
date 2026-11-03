@@ -65,6 +65,10 @@ console.log(renderMarkdown("nodejs/node", metrics));
 
 `computeMetrics` is a pure function over plain data, so you can feed it data from any source (GitLab, a cached dump, test fixtures) without touching the network.
 
+## Run it on your own repository
+
+This repository ships [a workflow](.github/workflows/pulse.yml) that runs `repo-pulse` every Monday and writes the report to the job summary. Copy it into your project to get a weekly maintenance snapshot, with no token setup: the built-in `GITHUB_TOKEN` is enough.
+
 ## Limits
 
 - Data comes from GitHub's list endpoints, capped at 10 pages of 100 items per collection by default (`maxPages`). Very large repositories are sampled from their most recent activity.
