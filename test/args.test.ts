@@ -14,6 +14,7 @@ describe("parseArgs", () => {
       repo: "nodejs/node",
       token: undefined,
       json: false,
+      includeBots: false,
       windowDays: 365,
       staleDays: 90,
     });
@@ -29,6 +30,10 @@ describe("parseArgs", () => {
     assert.equal(options.json, true);
     assert.equal(options.windowDays, 30);
     assert.equal(options.staleDays, 14);
+  });
+
+  it("parses --include-bots", () => {
+    assert.equal(run(["a/b", "--include-bots"]).includeBots, true);
   });
 
   it("recognizes help and version", () => {

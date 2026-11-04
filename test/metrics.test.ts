@@ -199,6 +199,28 @@ describe("computeMetrics", () => {
     assert.equal(m.coverage.pullsSince, daysAgo(60));
   });
 
+  it("excludes bot-authored pull requests by default", () => {
+    const pulls = [
+      pr({ number: 1, created_at: daysAgo(20), merged_at: daysAgo(10), user: { login: "alice", type: "User" } }),
+      pr({ number: 2, created_at: daysAgo(20), merged_at: daysAgo(20), user: { login: "dependabot[bot]", type: "Bot" } }),
+      pr({ number: 3, created_at: daysAgo(20), merged_at: daysAgo(20), user: { login: "pre-commit-ci[bot]" } }),
+    ];
+    const m = computeMetrics({ ...empty, pulls }, { now: NOW });
+    assert.equal(m.pullRequests.total, 1);
+    assert.equal(m.pullRequests.botsExcluded, 2);
+    assert.equal(m.pullRequests.medianDaysToMerge, 10, "bots no longer drag the median to zero");
+  });
+
+  it("counts bot-authored pull requests with includeBots", () => {
+    const pulls = [
+      pr({ number: 1, created_at: daysAgo(20), merged_at: daysAgo(10), user: { login: "alice", type: "User" } }),
+      pr({ number: 2, created_at: daysAgo(20), merged_at: daysAgo(20), user: { login: "dependabot[bot]", type: "Bot" } }),
+    ];
+    const m = computeMetrics({ ...empty, pulls }, { now: NOW, includeBots: true });
+    assert.equal(m.pullRequests.total, 2);
+    assert.equal(m.pullRequests.botsExcluded, 0);
+  });
+
   it("keeps issue ratios when only closed issues were truncated", () => {
     const m = computeMetrics(
       {

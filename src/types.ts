@@ -8,6 +8,8 @@ export interface PullRequest {
   closed_at: string | null;
   merged_at: string | null;
   draft?: boolean;
+  /** Author of the pull request. `type` is "Bot" for GitHub Apps such as Dependabot. */
+  user?: { login: string; type?: string } | null;
 }
 
 export interface Issue {
@@ -45,6 +47,8 @@ export interface MetricsOptions {
   now?: Date;
   /** Only pull requests created and releases published within this window are considered. Default: 365. */
   windowDays?: number;
+  /** Count pull requests opened by bots (Dependabot, pre-commit.ci...). Default: false. */
+  includeBots?: boolean;
   /** An open issue untouched for this many days is considered stale. Default: 90. */
   staleDays?: number;
 }
@@ -55,6 +59,8 @@ export interface PullRequestMetrics {
   merged: number;
   closedWithoutMerge: number;
   open: number;
+  /** Bot-authored pull requests left out of the figures above (0 when `includeBots` is set). */
+  botsExcluded: number;
   /** merged / (merged + closedWithoutMerge), or null when nothing was resolved. */
   mergeRate: number | null;
   /** Median days between opening and merging, or null when nothing was merged. */

@@ -2,6 +2,7 @@ export interface CliOptions {
   repo: string;
   token: string | undefined;
   json: boolean;
+  includeBots: boolean;
   windowDays: number;
   staleDays: number;
 }
@@ -17,6 +18,7 @@ Options:
   --token <token>     GitHub token (default: $GITHUB_TOKEN)
   --window <days>     Look-back window for PRs and releases (default: 365)
   --stale <days>      Days without activity before an open issue is stale (default: 90)
+  --include-bots      Count pull requests opened by bots (Dependabot, pre-commit.ci...)
   --json              Output JSON instead of Markdown
   -h, --help          Show this help
   -v, --version       Show the version
@@ -34,6 +36,7 @@ export function parseArgs(argv: readonly string[], env: Record<string, string | 
   let repo: string | undefined;
   let token = env.GITHUB_TOKEN;
   let json = false;
+  let includeBots = false;
   let windowDays = 365;
   let staleDays = 90;
 
@@ -48,6 +51,9 @@ export function parseArgs(argv: readonly string[], env: Record<string, string | 
         return { kind: "version" };
       case "--json":
         json = true;
+        break;
+      case "--include-bots":
+        includeBots = true;
         break;
       case "--token":
         token = argv[++i];
@@ -67,5 +73,5 @@ export function parseArgs(argv: readonly string[], env: Record<string, string | 
   }
 
   if (repo === undefined) throw new Error("Missing repository argument (owner/repo)");
-  return { kind: "run", options: { repo, token, json, windowDays, staleDays } };
+  return { kind: "run", options: { repo, token, json, includeBots, windowDays, staleDays } };
 }

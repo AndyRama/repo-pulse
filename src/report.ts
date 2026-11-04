@@ -60,6 +60,7 @@ export function renderMarkdown(repo: string, m: Metrics): string {
     "## Pull requests",
     "",
     `- Opened${m.coverage.pullsTruncated ? " (partial window)" : ""}: ${pr.total} (merged ${pr.merged}, closed without merge ${pr.closedWithoutMerge}, open ${pr.open})`,
+    ...(pr.botsExcluded > 0 ? [`- Bot-authored PRs excluded: ${pr.botsExcluded}`] : []),
     `- Merge rate: ${percent(pr.mergeRate)}`,
     `- Time to merge: median ${days(pr.medianDaysToMerge)}, p90 ${days(pr.p90DaysToMerge)}`,
     "",

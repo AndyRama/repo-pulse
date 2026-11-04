@@ -28,12 +28,12 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  const { repo, token, json, windowDays, staleDays } = parsed.options;
+  const { repo, token, json, includeBots, windowDays, staleDays } = parsed.options;
   try {
     const { owner, repo: name } = parseRepo(repo);
     const client = new GitHubClient({ token });
     const data = await client.fetchRepoData(owner, name, { windowDays });
-    const metrics = computeMetrics(data, { windowDays, staleDays });
+    const metrics = computeMetrics(data, { windowDays, staleDays, includeBots });
     const label = `${owner}/${name}`;
     console.log(json ? renderJson(label, metrics) : renderMarkdown(label, metrics));
     return 0;

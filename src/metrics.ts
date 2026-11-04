@@ -12,14 +12,21 @@ import type {
 const DEFAULT_WINDOW_DAYS = 365;
 const DEFAULT_STALE_DAYS = 90;
 
+function isBot(pr: RepoData["pulls"][number]): boolean {
+  return pr.user?.type === "Bot" || pr.user?.login.endsWith("[bot]") === true;
+}
+
 function pullRequestMetrics(
   pulls: RepoData["pulls"],
   now: Date,
   windowDays: number,
+  includeBots: boolean,
 ): PullRequestMetrics {
-  const inWindow = pulls.filter(
+  const candidates = pulls.filter(
     (pr) => !pr.draft && daysBetween(pr.created_at, now) <= windowDays,
   );
+  const botCount = candidates.filter(isBot).length;
+  const inWindow = includeBots ? candidates : candidates.filter((pr) => !isBot(pr));
   const merged = inWindow.filter((pr) => pr.merged_at !== null);
   const closedWithoutMerge = inWindow.filter(
     (pr) => pr.state === "closed" && pr.merged_at === null,
@@ -33,6 +40,7 @@ function pullRequestMetrics(
     merged: mergedCount,
     closedWithoutMerge: closedWithoutMerge.length,
     open: open.length,
+    botsExcluded: includeBots ? 0 : botCount,
     mergeRate: ratio(mergedCount, mergedCount + closedWithoutMerge.length),
     medianDaysToMerge: median(daysToMerge),
     p90DaysToMerge: percentile(daysToMerge, 90),
@@ -126,7 +134,7 @@ export function computeMetrics(data: RepoData, options: MetricsOptions = {}): Me
     throw new RangeError("windowDays and staleDays must be positive");
   }
 
-  const pullRequests = pullRequestMetrics(data.pulls, now, windowDays);
+  const pullRequests = pullRequestMetrics(data.pulls, now, windowDays, options.includeBots ?? false);
   const truncated: NonNullable<RepoData["truncated"]> = data.truncated ?? {
     pulls: false,
     issues: false,

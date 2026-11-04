@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.2.0]
+
+### Changed
+
+- Pull requests opened by bots (Dependabot, pre-commit.ci and other GitHub Apps) are now excluded from the pull request figures by default. They are usually merged within hours and pulled the median time to merge towards zero. The report states how many were excluded. Pass `--include-bots` (CLI) or `includeBots: true` (library) to count them. Scores change accordingly.
+- `PullRequestMetrics` gains `botsExcluded`; `PullRequest` gains an optional `user`.
+
 ### Fixed
 
 - The score is only labelled "partial data" when truncation affects it (pull requests or open issues). Truncated closed issues or releases are listed under "Data coverage" without discrediting the score.

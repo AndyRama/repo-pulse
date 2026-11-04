@@ -12,7 +12,7 @@ Stars say a project is popular, not that it is looked after. Maintainers carry t
 
 | Area | Metrics |
 | --- | --- |
-| Pull requests | opened, merged, closed without merge, merge rate, median and p90 time to merge |
+| Pull requests | opened, merged, closed without merge, merge rate, median and p90 time to merge (bot-authored PRs excluded by default) |
 | Issues | open and closed, stale open issues, open issues with no comment, median time to close |
 | Releases | releases in the window, days since the last release, median gap between releases |
 | Health score | 0 to 100, the average of the four components above that have data |
@@ -44,6 +44,7 @@ npx @andyrama/repo-pulse owner/repo --window 180 --stale 60
 | `--token <token>` | `$GITHUB_TOKEN` | GitHub token |
 | `--window <days>` | 365 | Look-back window for pull requests and releases |
 | `--stale <days>` | 90 | Days without activity before an open issue counts as stale |
+| `--include-bots` | off | Count pull requests opened by bots (Dependabot, pre-commit.ci...) |
 | `--json` | off | Output JSON instead of Markdown |
 
 Exit codes: `0` success, `1` runtime error (network, rate limit, not found), `2` invalid arguments.

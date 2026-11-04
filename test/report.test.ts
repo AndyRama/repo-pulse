@@ -54,4 +54,18 @@ describe("report coverage warnings", () => {
     assert.match(md, /Closed issues: the fetch cap was reached/);
     assert.doesNotMatch(md, /\(partial data\)/);
   });
+
+  it("states how many bot pull requests were excluded", () => {
+    const bot = {
+      number: 1,
+      state: "closed" as const,
+      created_at: "2026-05-20T00:00:00Z",
+      updated_at: "2026-05-20T00:00:00Z",
+      closed_at: "2026-05-20T01:00:00Z",
+      merged_at: "2026-05-20T01:00:00Z",
+      user: { login: "dependabot[bot]", type: "Bot" },
+    };
+    const md = renderMarkdown("o/r", computeMetrics({ ...base, pulls: [bot] }, { now: NOW }));
+    assert.match(md, /Bot-authored PRs excluded: 1/);
+  });
 });
